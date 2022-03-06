@@ -1,0 +1,19 @@
+{
+  "name": "audioplayer",
+  "version": "1.0.0",
+  "description": "an audio player aimed to explore browser compatibility",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx snowpack dev",
+    "build": "npx snowpack build"
+  },
+  "author": "kougami",
+  "license": "ISC",
+  "devDependencies": {
+    "snowpack": "^3.8.8"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.5.1"
+  }
+}
