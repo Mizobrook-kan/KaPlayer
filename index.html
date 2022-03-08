@@ -16,6 +16,9 @@
 <div class="music-container" id="music-container">
     <div class="music-info">
         <h4 id="title"></h4>
+        <span class="time-inner">
+            <span class="ptime">00:00</span> / <span class="dtime">00:00</span>
+        </span>
         <div class="progress-container" id="progress-container">
             <div class="progress" id="progress"></div>
         </div>
@@ -40,5 +43,12 @@
 </div>
 
 <script src="index.js"></script>
+<script src="kaplayer.js"></script>
+<script type="module">
+    import KaPlayer from './kaplayer.js'
+    const fuck = new KaPlayer({
+        container: document.getElementById('fuck')
+    })
+</script>
 </body>
 </html>

@@ -3,6 +3,8 @@
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
+  root: 'kaplayer.js',
+  mode: "production",
   mount: {
     /* ... */
   },
@@ -19,5 +21,6 @@ module.exports = {
   },
   buildOptions: {
     /* ... */
+    out: "dist"
   },
 };

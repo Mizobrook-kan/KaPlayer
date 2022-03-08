@@ -175,4 +175,4 @@ progressContainer.addEventListener('click', setProgress);
 audio.addEventListener('ended', nextSong);
 
 // Time of song
-audio.addEventListener('timeupdate', DurTime);
+// audio.addEventListener('timeupdate', DurTime);
