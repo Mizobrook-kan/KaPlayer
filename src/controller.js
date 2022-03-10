@@ -1,12 +1,15 @@
 class Controller {
     constructor(player, list) {
-        this.playBtn = player.container.getElementById('play')
-        this.prevBtn = player.container.getElementById('prev')
-        this.nextBtn = player.container.getElementById('next')
-        this.player_body = player.container.getElementById('kaplayer-body')
-        this.audio = player.container.getElementById('audio')
-        this.progressContainer = player.container.getElementById('progress-container')
+        // console.log(player)
+        this.playBtn = player.container.querySelector('#play')
+        this.prevBtn = player.container.querySelector('#prev')
+        this.nextBtn = player.container.querySelector('#next')
+        this.player_body = player.container.querySelector('#kaplayer-body')
+        this.audio = player.container.querySelector('#audio')
+        this.progressContainer = player.container.querySelector('#progress-container')
         this.list = list
+
+        this.btnEvents()
     }
 
     
@@ -32,9 +35,9 @@ class Controller {
             const isPlaying = this.player_body.classList.contains('play')
 
             if (isPlaying) {
-                pauseSong()
+                this.pauseSong()
             } else {
-                playSong()
+                this.playSong()
             }
         })
 

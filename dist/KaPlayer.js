@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -955,6 +955,314 @@ process.umask = function () {
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var api = __webpack_require__(8);
+            var content = __webpack_require__(9);
+
+            content = content.__esModule ? content.default : content;
+
+            if (typeof content === 'string') {
+              content = [[module.i, content, '']];
+            }
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = api(content, options);
+
+
+
+module.exports = content.locals || {};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var isOldIE = function isOldIE() {
+  var memo;
+  return function memorize() {
+    if (typeof memo === 'undefined') {
+      // Test for IE <= 9 as proposed by Browserhacks
+      // @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+      // Tests for existence of standard globals is to allow style-loader
+      // to operate correctly into non-standard environments
+      // @see https://github.com/webpack-contrib/style-loader/issues/177
+      memo = Boolean(window && document && document.all && !window.atob);
+    }
+
+    return memo;
+  };
+}();
+
+var getTarget = function getTarget() {
+  var memo = {};
+  return function memorize(target) {
+    if (typeof memo[target] === 'undefined') {
+      var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself
+
+      if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+        try {
+          // This will throw an exception if access to iframe is blocked
+          // due to cross-origin restrictions
+          styleTarget = styleTarget.contentDocument.head;
+        } catch (e) {
+          // istanbul ignore next
+          styleTarget = null;
+        }
+      }
+
+      memo[target] = styleTarget;
+    }
+
+    return memo[target];
+  };
+}();
+
+var stylesInDom = [];
+
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+
+  for (var i = 0; i < stylesInDom.length; i++) {
+    if (stylesInDom[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+
+  return result;
+}
+
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var index = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3]
+    };
+
+    if (index !== -1) {
+      stylesInDom[index].references++;
+      stylesInDom[index].updater(obj);
+    } else {
+      stylesInDom.push({
+        identifier: identifier,
+        updater: addStyle(obj, options),
+        references: 1
+      });
+    }
+
+    identifiers.push(identifier);
+  }
+
+  return identifiers;
+}
+
+function insertStyleElement(options) {
+  var style = document.createElement('style');
+  var attributes = options.attributes || {};
+
+  if (typeof attributes.nonce === 'undefined') {
+    var nonce =  true ? __webpack_require__.nc : undefined;
+
+    if (nonce) {
+      attributes.nonce = nonce;
+    }
+  }
+
+  Object.keys(attributes).forEach(function (key) {
+    style.setAttribute(key, attributes[key]);
+  });
+
+  if (typeof options.insert === 'function') {
+    options.insert(style);
+  } else {
+    var target = getTarget(options.insert || 'head');
+
+    if (!target) {
+      throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+    }
+
+    target.appendChild(style);
+  }
+
+  return style;
+}
+
+function removeStyleElement(style) {
+  // istanbul ignore if
+  if (style.parentNode === null) {
+    return false;
+  }
+
+  style.parentNode.removeChild(style);
+}
+/* istanbul ignore next  */
+
+
+var replaceText = function replaceText() {
+  var textStore = [];
+  return function replace(index, replacement) {
+    textStore[index] = replacement;
+    return textStore.filter(Boolean).join('\n');
+  };
+}();
+
+function applyToSingletonTag(style, index, remove, obj) {
+  var css = remove ? '' : obj.media ? "@media ".concat(obj.media, " {").concat(obj.css, "}") : obj.css; // For old IE
+
+  /* istanbul ignore if  */
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = replaceText(index, css);
+  } else {
+    var cssNode = document.createTextNode(css);
+    var childNodes = style.childNodes;
+
+    if (childNodes[index]) {
+      style.removeChild(childNodes[index]);
+    }
+
+    if (childNodes.length) {
+      style.insertBefore(cssNode, childNodes[index]);
+    } else {
+      style.appendChild(cssNode);
+    }
+  }
+}
+
+function applyToTag(style, options, obj) {
+  var css = obj.css;
+  var media = obj.media;
+  var sourceMap = obj.sourceMap;
+
+  if (media) {
+    style.setAttribute('media', media);
+  } else {
+    style.removeAttribute('media');
+  }
+
+  if (sourceMap && typeof btoa !== 'undefined') {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  } // For old IE
+
+  /* istanbul ignore if  */
+
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    while (style.firstChild) {
+      style.removeChild(style.firstChild);
+    }
+
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var singleton = null;
+var singletonCounter = 0;
+
+function addStyle(obj, options) {
+  var style;
+  var update;
+  var remove;
+
+  if (options.singleton) {
+    var styleIndex = singletonCounter++;
+    style = singleton || (singleton = insertStyleElement(options));
+    update = applyToSingletonTag.bind(null, style, styleIndex, false);
+    remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+  } else {
+    style = insertStyleElement(options);
+    update = applyToTag.bind(null, style, options);
+
+    remove = function remove() {
+      removeStyleElement(style);
+    };
+  }
+
+  update(obj);
+  return function updateStyle(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap) {
+        return;
+      }
+
+      update(obj = newObj);
+    } else {
+      remove();
+    }
+  };
+}
+
+module.exports = function (list, options) {
+  options = options || {}; // Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+  // tags it will allow on a page
+
+  if (!options.singleton && typeof options.singleton !== 'boolean') {
+    options.singleton = isOldIE();
+  }
+
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+
+    if (Object.prototype.toString.call(newList) !== '[object Array]') {
+      return;
+    }
+
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDom[index].references--;
+    }
+
+    var newLastIdentifiers = modulesToDom(newList, options);
+
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+
+      var _index = getIndexByIdentifier(_identifier);
+
+      if (stylesInDom[_index].references === 0) {
+        stylesInDom[_index].updater();
+
+        stylesInDom.splice(_index, 1);
+      }
+    }
+
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -964,6 +1272,101 @@ __webpack_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/_promise-polyfill@8.2.1@promise-polyfill/src/index.js
 var src = __webpack_require__(1);
 
+// CONCATENATED MODULE: ./src/utils.js
+var utils = {
+  secondToTime: function secondToTime(second) {
+    var add0 = function add0(num) {
+      return num < 10 ? '0' + num : '' + num;
+    };
+
+    var hour = Math.floor(second / 3600);
+    var min = Math.floor((second - hour * 3600) / 60);
+    var sec = Math.floor(second - hour * 3600 - min * 60);
+    return (hour > 0 ? [hour, min, sec] : [min, sec]).map(add0).join(':');
+  }
+};
+/* harmony default export */ var src_utils = (utils);
+// CONCATENATED MODULE: ./src/controller.js
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var Controller = /*#__PURE__*/function () {
+  function Controller(player, list) {
+    _classCallCheck(this, Controller);
+
+    // console.log(player)
+    this.playBtn = player.container.querySelector('#play');
+    this.prevBtn = player.container.querySelector('#prev');
+    this.nextBtn = player.container.querySelector('#next');
+    this.player_body = player.container.querySelector('#kaplayer-body');
+    this.audio = player.container.querySelector('#audio');
+    this.progressContainer = player.container.querySelector('#progress-container');
+    this.list = list;
+    this.btnEvents();
+  }
+
+  _createClass(Controller, [{
+    key: "playSong",
+    value: function playSong() {
+      this.player_body.classList.add('play');
+      this.playBtn.querySelector('i.fas').classList.remove('fa-play');
+      this.playBtn.querySelector('i.fas').classList.add('fa-pause');
+      this.audio.play();
+    }
+  }, {
+    key: "pauseSong",
+    value: function pauseSong() {
+      this.player_body.classList.remove('play');
+      this.playBtn.querySelector('i.fas').classList.add('fa-play');
+      this.playBtn.querySelector('i.fas').classList.remove('fa-pause');
+      this.audio.pause();
+    }
+  }, {
+    key: "btnEvents",
+    value: function btnEvents() {
+      var _this = this;
+
+      this.playBtn.addEventListener('click', function () {
+        var isPlaying = _this.player_body.classList.contains('play');
+
+        if (isPlaying) {
+          _this.pauseSong();
+        } else {
+          _this.playSong();
+        }
+      });
+      this.prevBtn.addEventListener('click', function () {
+        var nextIndex = _this.list.index - 1;
+        var index = nextIndex < 0 ? _this.list.audios.length - 1 : nextIndex;
+
+        _this.list["switch"](index);
+
+        _this.playSong();
+      });
+      this.nextBtn.addEventListener('click', function () {
+        var nextIndex = _this.list.index + 1;
+        var index = nextIndex > _this.list.audios.length - 1 ? 0 : nextIndex;
+
+        _this.list["switch"](index);
+
+        _this.playSong();
+      });
+      this.progressContainer.addEventListener('click', function (e) {
+        var width = _this.progressContainer.clientWidth;
+        var clickX = e.offsetX;
+        var duration = _this.audio.duration;
+        _this.audio.currentTime = clickX / width * duration;
+      });
+    }
+  }]);
+
+  return Controller;
+}();
+
+/* harmony default export */ var controller = (Controller);
 // CONCATENATED MODULE: ./src/options.js
 /* harmony default export */ var src_options = (function (options) {
   console.log(options);
@@ -992,19 +1395,62 @@ var src = __webpack_require__(1);
   //     return item;
   // });
 
+
+  return options;
 });
-// CONCATENATED MODULE: ./src/index.css
-// extracted by mini-css-extract-plugin
+// CONCATENATED MODULE: ./src/list.js
+function list_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function list_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function list_createClass(Constructor, protoProps, staticProps) { if (protoProps) list_defineProperties(Constructor.prototype, protoProps); if (staticProps) list_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+
+
+var list_List = /*#__PURE__*/function () {
+  function List(player) {
+    list_classCallCheck(this, List);
+
+    this.player = player;
+    this.index = 0;
+    this.audios = player.options.audio; // this.bindEvents()
+  } // bindEvents() {
+  // 
+  // }
+
+
+  list_createClass(List, [{
+    key: "switch",
+    value: function _switch(index) {
+      if (typeof index !== 'undefined' && this.audios[index]) {
+        this.index = index;
+        var audio = this.audios[this.index]; // let cover = this.player.container.getElementById('cover')
+        // let title = this.player.container.getElementById('title')
+        // this.player.container.getElementById('audio').src = `music/${audio.name}`
+        // this.player.container.getElementById('cover').src = `images/${audio.cover}`
+
+        this.player.img.hasAttribute("src") ? this.player.img.src = "".concat(audio.cover) : this.player.img.setAttribute("src", audio.cover);
+        this.player.audio.hasAttribute("src") ? this.player.audio.src = "".concat(audio.url) : this.player.audio.setAttribute("src", audio.url);
+        this.player.container.querySelector('#title').innerText = audio.name;
+        this.player.setAudio(audio);
+        this.player.container.querySelector('.dtime').innerHTML = src_utils.secondToTime(this.player.duration);
+      }
+    }
+  }]);
+
+  return List;
+}();
+
+/* harmony default export */ var list = (list_List);
 // CONCATENATED MODULE: ./src/kaplayer.js
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function kaplayer_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function kaplayer_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function kaplayer_createClass(Constructor, protoProps, staticProps) { if (protoProps) kaplayer_defineProperties(Constructor.prototype, protoProps); if (staticProps) kaplayer_defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
- // import utils from './utils';
-// import Controller from './controller';
+
+
 
 
 
@@ -1015,7 +1461,7 @@ var kaplayer_KaPlayer = /*#__PURE__*/function () {
    * @constructor
    */
   function KaPlayer(options) {
-    _classCallCheck(this, KaPlayer);
+    kaplayer_classCallCheck(this, KaPlayer);
 
     // TODO: options seems not to deal with multiple audios
     this.options = src_options(options);
@@ -1023,31 +1469,34 @@ var kaplayer_KaPlayer = /*#__PURE__*/function () {
     this.paused = true;
     this.playedPromise = src["a" /* default */].resolve();
     this.mode = 'normal';
-    this.container.classList.add('kaplayer');
+    this.container.classList.add('kaplayer'); // if (this.options.lrcType) {
+    //     this.container.classList.add('lyric')
+    // }
+    // save lyric
 
-    if (this.options.lrcType) {
-      this.container.classList.add('lyric');
-    } // save lyric
-
-
-    var playerHTMLContent = "\n        <div class=\"kaplayer-body\" id=\"kaplayer-body\">\n    <div class=\"music-info\">\n        <h4 id=\"title\"></h4>\n        <span class=\"time-inner\">\n            <span class=\"ptime\">00:00</span> / <span class=\"dtime\">00:00</span>\n        </span>\n        <div class=\"progress-container\" id=\"progress-container\">\n            <div class=\"progress\" id=\"progress\"></div>\n        </div>\n    </div>\n\n    <audio src=\"music/The Hardest Mistakes.mp3\" id=\"audio\"></audio>\n\n    <div class=\"img-container\">\n        <img src=\"images/The Hardest Mistakes.jpg\" alt=\"music-cover\" id=\"cover\" />\n    </div>\n    <div class=\"navigation\">\n        <button id=\"prev\" class=\"action-btn\">\n            <i class=\"fas fa-backward\"></i>\n        </button>\n        <button id=\"play\" class=\"action-btn action-btn-big\">\n            <i class=\"fas fa-play\"></i>\n        </button>\n        <button id=\"next\" class=\"action-btn\">\n            <i class=\"fas fa-forward\"></i>\n        </button>\n    </div>\n</div>";
+    var playerHTMLContent = "<div class=\"kaplayer-body\" id=\"kaplayer-body\">\n                                    <div class=\"music-info\">\n                                        <h4 id=\"title\"></h4>\n                                        <span class=\"time-inner\">\n                                            <span class=\"ptime\">00:00</span> / <span class=\"dtime\">00:00</span>\n                                        </span>\n                                        <div class=\"progress-container\" id=\"progress-container\">\n                                            <div class=\"progress\" id=\"progress\"></div>\n                                        </div>\n                                    </div>\n\n                                    <audio id=\"audio\"></audio>\n\n                                    <div class=\"img-container\">\n                                        <img alt=\"music-cover\" id=\"cover\" />\n                                    </div>\n                                    <div class=\"navigation\">\n                                        <button id=\"prev\" class=\"action-btn\">\n                                            <i class=\"fas fa-backward\"></i>\n                                        </button>\n                                        <button id=\"play\" class=\"action-btn action-btn-big\">\n                                            <i class=\"fas fa-play\"></i>\n                                        </button>\n                                        <button id=\"next\" class=\"action-btn\">\n                                            <i class=\"fas fa-forward\"></i>\n                                        </button>\n                                    </div>\n                                 </div>";
     this.container.innerHTML = playerHTMLContent; // this.list = options.audios;
     // TODO: multiple audios management array
 
-    this.list = new List(this);
-    this.audio = this.container.getElementByTagName('audio'); // this.progress = this.container.getElementById('progress')
+    this.list = new list(this); // this.audio = this.container.getElementByTagName('audio')
+    // this.progress = this.container.getElementById('progress')
     // this.events = new Events()
     // this.controller = new Controller(this)
     // this.playBtn = this.container.getElementById('play')
     // this.prevBtn = this.container.getElementById('prev')
     // this.nextBtn = this.container.getElementById('next')
 
-    this.controller = new Controller(this, this.list); // this.initAudio()
-
+    this.controller = new controller(this, this.list);
+    this.initAudio();
     this.bindEvents();
   }
 
-  _createClass(KaPlayer, [{
+  kaplayer_createClass(KaPlayer, [{
+    key: "initAudio",
+    value: function initAudio() {
+      this.list["switch"](0);
+    }
+  }, {
     key: "bindEvents",
     value: function bindEvents() {
       var _this = this;
@@ -1073,18 +1522,18 @@ var kaplayer_KaPlayer = /*#__PURE__*/function () {
       }); // this.audio.addEventListener('timeupdate', DurTime)
 
       this.audio.addEventListener('timeupdate', function () {
-        var currentTime = utils.secondToTime(_this.audio.currentTime);
+        var currentTime = src_utils.secondToTime(_this.audio.currentTime);
 
-        var ptime = _this.container.getElementByClassName('ptime');
+        var ptime = _this.container.querySelector('.ptime');
 
         if (ptime.innerHTML !== currentTime) {
           ptime.innerHTML = currentTime;
         }
       });
       this.audio.addEventListener('durationchange', function () {
-        var dtime = _this.container.getElementByClassName('dtime');
+        var dtime = _this.container.querySelector('.dtime');
 
-        dtime.innerHTML = utils.secondToTime(_this.duration);
+        dtime.innerHTML = src_utils.secondToTime(_this.duration);
       });
     }
   }, {
@@ -1095,12 +1544,22 @@ var kaplayer_KaPlayer = /*#__PURE__*/function () {
   }, {
     key: "progress",
     get: function get() {
-      return this.container.getElementById('progress');
+      return this.container.querySelector('#progress');
     }
   }, {
     key: "duration",
     get: function get() {
       return isNaN(this.audio.duration) ? 0 : this.audio.duration;
+    }
+  }, {
+    key: "img",
+    get: function get() {
+      return this.container.querySelector('#cover');
+    }
+  }, {
+    key: "audio",
+    get: function get() {
+      return this.container.querySelector('#audio');
     }
   }]);
 
@@ -1108,9 +1567,13 @@ var kaplayer_KaPlayer = /*#__PURE__*/function () {
 }();
 
 /* harmony default export */ var kaplayer = (kaplayer_KaPlayer);
+// EXTERNAL MODULE: ./src/index.css
+var src_0 = __webpack_require__(7);
+
 // CONCATENATED MODULE: ./src/index.js
 
-/* harmony default export */ var src_0 = __webpack_exports__["default"] = (kaplayer);
+
+/* harmony default export */ var src_1 = __webpack_exports__["default"] = (kaplayer);
 
 /***/ })
 /******/ ])["default"];

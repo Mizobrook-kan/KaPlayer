@@ -3,10 +3,9 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const autoprefixer = require('autoprefixer')
 const isProduction = process.env.NODE_ENV == 'production';
-
-
-const stylesHandler = 'style-loader';
+// const stylesHandler = 'style-loader';
 
 
 
@@ -52,6 +51,19 @@ const config = {
             //     test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
             //     type: 'asset',
             // },
+            {
+                test: /\.css$/,
+                use: ['style-loader', {
+                    loader: 'postcss-loader',
+                    options: {
+                        postcssOptions: {
+                            plugins: ["autoprefixer"]
+                        }
+                        
+                    }
+                }]
+                
+            },
                          
             {
                 test: /\.css$/i,

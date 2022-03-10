@@ -1,10 +1,10 @@
 import Promise from "promise-polyfill";
 
-// import utils from './utils';
-// import Controller from './controller';
+import utils from './utils';
+import Controller from './controller';
 import handleOption from './options'
 import List from './list'
-import "./index.css"
+
 
 class KaPlayer {
     /**
@@ -26,35 +26,34 @@ class KaPlayer {
         
         // save lyric
         
-        let playerHTMLContent = `
-        <div class="kaplayer-body" id="kaplayer-body">
-    <div class="music-info">
-        <h4 id="title"></h4>
-        <span class="time-inner">
-            <span class="ptime">00:00</span> / <span class="dtime">00:00</span>
-        </span>
-        <div class="progress-container" id="progress-container">
-            <div class="progress" id="progress"></div>
-        </div>
-    </div>
+        let playerHTMLContent = `<div class="kaplayer-body" id="kaplayer-body">
+                                    <div class="music-info">
+                                        <h4 id="title"></h4>
+                                        <span class="time-inner">
+                                            <span class="ptime">00:00</span> / <span class="dtime">00:00</span>
+                                        </span>
+                                        <div class="progress-container" id="progress-container">
+                                            <div class="progress" id="progress"></div>
+                                        </div>
+                                    </div>
 
-    <audio id="audio"></audio>
+                                    <audio id="audio"></audio>
 
-    <div class="img-container">
-        <img alt="music-cover" id="cover" />
-    </div>
-    <div class="navigation">
-        <button id="prev" class="action-btn">
-            <i class="fas fa-backward"></i>
-        </button>
-        <button id="play" class="action-btn action-btn-big">
-            <i class="fas fa-play"></i>
-        </button>
-        <button id="next" class="action-btn">
-            <i class="fas fa-forward"></i>
-        </button>
-    </div>
-</div>`
+                                    <div class="img-container">
+                                        <img alt="music-cover" id="cover" />
+                                    </div>
+                                    <div class="navigation">
+                                        <button id="prev" class="action-btn">
+                                            <i class="fas fa-backward"></i>
+                                        </button>
+                                        <button id="play" class="action-btn action-btn-big">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button id="next" class="action-btn">
+                                            <i class="fas fa-forward"></i>
+                                        </button>
+                                    </div>
+                                 </div>`
 
 this.container.innerHTML = playerHTMLContent
         // this.list = options.audios;
@@ -70,8 +69,12 @@ this.container.innerHTML = playerHTMLContent
 
         this.controller = new Controller(this, this.list)
         
-        // this.initAudio()
+        this.initAudio()
         this.bindEvents()
+    }
+
+    initAudio() {
+        this.list.switch(0)
     }
 
     bindEvents() {
@@ -94,13 +97,13 @@ this.container.innerHTML = playerHTMLContent
         // this.audio.addEventListener('timeupdate', DurTime)
         this.audio.addEventListener('timeupdate', () => {
             const currentTime = utils.secondToTime(this.audio.currentTime)
-            let ptime = this.container.getElementByClassName('ptime')
+            let ptime = this.container.querySelector('.ptime')
             if(ptime.innerHTML !== currentTime) {
                 ptime.innerHTML = currentTime
             }
         })
         this.audio.addEventListener('durationchange', () => {
-            let dtime = this.container.getElementByClassName('dtime')
+            let dtime = this.container.querySelector('.dtime')
             dtime.innerHTML = utils.secondToTime(this.duration)
             
         })
@@ -112,16 +115,16 @@ this.container.innerHTML = playerHTMLContent
     }
     
     get progress() {
-        return this.container.getElementById('progress')
+        return this.container.querySelector('#progress')
     }
     get duration() {
         return isNaN(this.audio.duration) ? 0 : this.audio.duration;
     }
     get img() {
-        return this.container.getElementById('cover')
+        return this.container.querySelector('#cover')
     }
     get audio() {
-        return this.container.getElementByTagName('audio')
+        return this.container.querySelector('#audio')
     }
     
 }
