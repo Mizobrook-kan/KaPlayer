@@ -17,13 +17,16 @@ class List {
             const audio = this.audios[this.index];
             // let cover = this.player.container.getElementById('cover')
             // let title = this.player.container.getElementById('title')
-            this.player.container.getElementById('audio').src = `music/${audio.name}`
-            this.player.container.getElementById('cover').src = `images/${audio.cover}`
+            // this.player.container.getElementById('audio').src = `music/${audio.name}`
+            // this.player.container.getElementById('cover').src = `images/${audio.cover}`
+            this.player.img.hasAttribute("src") ? this.player.img.src = `${audio.cover}` : this.player.img.setAttribute("src", audio.cover)
+            this.player.audio.hasAttribute("src") ? this.player.audio.src = `${audio.url}` : this.player.audio.setAttribute("src", audio.url)
             this.player.container.getElementById('title').innerText = audio.name
 
             this.player.setAudio(audio)
 
             this.player.container.getElementByClassName('dtime').innerHTML = utils.secondToTime(this.player.duration)
+            
         }
     }
 }

@@ -38,10 +38,10 @@ class KaPlayer {
         </div>
     </div>
 
-    <audio src="music/The Hardest Mistakes.mp3" id="audio"></audio>
+    <audio id="audio"></audio>
 
     <div class="img-container">
-        <img src="images/The Hardest Mistakes.jpg" alt="music-cover" id="cover" />
+        <img alt="music-cover" id="cover" />
     </div>
     <div class="navigation">
         <button id="prev" class="action-btn">
@@ -60,7 +60,7 @@ this.container.innerHTML = playerHTMLContent
         // this.list = options.audios;
         // TODO: multiple audios management array
         this.list = new List(this)
-        this.audio = this.container.getElementByTagName('audio')
+        // this.audio = this.container.getElementByTagName('audio')
         // this.progress = this.container.getElementById('progress')
         // this.events = new Events()
         // this.controller = new Controller(this)
@@ -76,7 +76,6 @@ this.container.innerHTML = playerHTMLContent
 
     bindEvents() {
         
-
         this.audio.addEventListener('timeupdate', (e) => {
             const { duration, currentTime } = e.srcElement
             const progressPercent = (currentTime / duration) * 100
@@ -117,6 +116,12 @@ this.container.innerHTML = playerHTMLContent
     }
     get duration() {
         return isNaN(this.audio.duration) ? 0 : this.audio.duration;
+    }
+    get img() {
+        return this.container.getElementById('cover')
+    }
+    get audio() {
+        return this.container.getElementByTagName('audio')
     }
     
 }
