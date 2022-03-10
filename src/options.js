@@ -25,4 +25,5 @@ export default (options) => {
     //     item.type = item.type || 'normal';
     //     return item;
     // });
+    return options
 }

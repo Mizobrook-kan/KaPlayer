@@ -3,87 +3,8 @@ import Promise from "promise-polyfill";
 // import utils from './utils';
 // import Controller from './controller';
 import handleOption from './options'
-// import Timer from './timer';
-// Update progress bar
-// function updateProgress(e) {
-//     const { duration, currentTime } = e.srcElement;
-//     const progressPercent = (currentTime / duration) * 100;
-//     progress.style.width = `${progressPercent}%`;
-// }
-
-// Next song
-// function nextSong() {
-//     songIndex++;
-
-//     if (songIndex > songs.length - 1) {
-//         songIndex = 0;
-//     }
-
-//     loadSong(songs[songIndex]);
-
-//     playSong();
-// }
-
-// function DurTime(e) {
-//     const { duration, currentTime } = e.srcElement;
-//     var sec;
-//     var sec_d;
-
-//     // define minutes currentTime
-//     let min = (currentTime == null) ? 0 :
-//         Math.floor(currentTime / 60);
-//     min = min < 10 ? '0' + min : min;
-
-//     // define seconds currentTime
-//     function get_sec(x) {
-//         if (Math.floor(x) >= 60) {
-
-//             for (var i = 1; i <= 60; i++) {
-//                 if (Math.floor(x) >= (60 * i) && Math.floor(x) < (60 * (i + 1))) {
-//                     sec = Math.floor(x) - (60 * i);
-//                     sec = sec < 10 ? '0' + sec : sec;
-//                 }
-//             }
-//         } else {
-//             sec = Math.floor(x);
-//             sec = sec < 10 ? '0' + sec : sec;
-//         }
-//     }
-
-//     get_sec(currentTime, sec);
-
-//     // change currentTime DOM
-//     currTime.innerHTML = min + ':' + sec;
-
-//     // define minutes duration
-//     let min_d = (isNaN(duration) === true) ? '0' :
-//         Math.floor(duration / 60);
-//     min_d = min_d < 10 ? '0' + min_d : min_d;
-
-
-//     function get_sec_d(x) {
-//         if (Math.floor(x) >= 60) {
-
-//             for (var i = 1; i <= 60; i++) {
-//                 if (Math.floor(x) >= (60 * i) && Math.floor(x) < (60 * (i + 1))) {
-//                     sec_d = Math.floor(x) - (60 * i);
-//                     sec_d = sec_d < 10 ? '0' + sec_d : sec_d;
-//                 }
-//             }
-//         } else {
-//             sec_d = (isNaN(duration) === true) ? '0' :
-//                 Math.floor(x);
-//             sec_d = sec_d < 10 ? '0' + sec_d : sec_d;
-//         }
-//     }
-
-//     // define seconds duration
-
-//     get_sec_d(duration);
-
-//     // change duration DOM
-//     durTime.innerHTML = min_d + ':' + sec_d;
-// }
+import List from './list'
+import "./index.css"
 
 class KaPlayer {
     /**
@@ -99,9 +20,9 @@ class KaPlayer {
         this.mode = 'normal';
 
         this.container.classList.add('kaplayer');
-        if (this.options.lrcType) {
-            this.container.classList.add('lyric')
-        }
+        // if (this.options.lrcType) {
+        //     this.container.classList.add('lyric')
+        // }
         
         // save lyric
         
@@ -190,41 +111,14 @@ this.container.innerHTML = playerHTMLContent
     setAudio(audio) {
         this.audio.src = audio.url
     }
-    // function pauseSong() {
-    //     this.container.getElementById('kaplayer-body').classList.remove('play')
-    //     this.playBtn.querySelector('i.fas').classList.add('fa-play')
-    //     this.playBtn.querySelector('i.fas').classList.remove('fa-pause')
-
-    //     this.audio.pause()
-    // }
-
-    // btnEvents() {
-    //     this.playBtn.addEventListener('click', () => {
-    //         let player_body = this.container.getElementById('kaplayer-body')
-    //         const isPlaying = player_body.classList.contains('play')
-
-    //         if(isPlaying) {
-    //             pauseSong()
-    //         } else {
-    //             playSong()
-    //         }
-    //     })
-    // }
+    
     get progress() {
         return this.container.getElementById('progress')
     }
     get duration() {
         return isNaN(this.audio.duration) ? 0 : this.audio.duration;
     }
-    // initAudio() {
-    //     this.audio = document.createElement('audio')
-        
-    //     for(let i = 0;i<this.events.audioEvents.length; i++) {
-    //         this.audio.addEventListener(this.events.audioEvents[i], (e) => {
-    //             this.events.trigger(this.events.audioEvents[i], e)
-    //         })
-    //     }
-    // }
+    
 }
 
 export default KaPlayer
