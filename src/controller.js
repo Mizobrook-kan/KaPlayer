@@ -1,7 +1,7 @@
 class Controller {
     constructor(player, list) {
         // console.log(player)
-        this.playBtn = player.container.querySelector('#play')
+        this.playpauseBtn = player.container.querySelector('#playpause')
         this.prevBtn = player.container.querySelector('#prev')
         this.nextBtn = player.container.querySelector('#next')
         this.player_body = player.container.querySelector('#kaplayer-body')
@@ -14,25 +14,25 @@ class Controller {
 
     
     playSong() {
-        this.player_body.classList.add('play')
-        this.playBtn.querySelector('i.fas').classList.remove('fa-play')
-        this.playBtn.querySelector('i.fas').classList.add('fa-pause')
+        this.player_body.classList.add('playing')
+        this.playpauseBtn.querySelector('i.fas').classList.remove('fa-play')
+        this.playpauseBtn.querySelector('i.fas').classList.add('fa-pause')
 
         this.audio.play()
     }
 
     pauseSong() {
-        this.player_body.classList.remove('play')
-        this.playBtn.querySelector('i.fas').classList.add('fa-play')
-        this.playBtn.querySelector('i.fas').classList.remove('fa-pause')
+        this.player_body.classList.remove('playing')
+        this.playpauseBtn.querySelector('i.fas').classList.add('fa-play')
+        this.playpauseBtn.querySelector('i.fas').classList.remove('fa-pause')
 
         this.audio.pause()
     }
 
     btnEvents() {
-        this.playBtn.addEventListener('click', () => {
+        this.playpauseBtn.addEventListener('click', () => {
             
-            const isPlaying = this.player_body.classList.contains('play')
+            const isPlaying = this.player_body.classList.contains('playing')
 
             if (isPlaying) {
                 this.pauseSong()

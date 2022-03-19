@@ -4,6 +4,7 @@ import utils from './utils';
 import Controller from './controller';
 import handleOption from './options'
 import List from './list'
+import Template from './template'
 
 
 class KaPlayer {
@@ -26,36 +27,36 @@ class KaPlayer {
         
         // save lyric
         
-        let playerHTMLContent = `<div class="kaplayer-body" id="kaplayer-body">
-                                    <div class="music-info">
-                                        <h4 id="title"></h4>
-                                        <span class="time-inner">
-                                            <span class="ptime">00:00</span> / <span class="dtime">00:00</span>
-                                        </span>
-                                        <div class="progress-container" id="progress-container">
-                                            <div class="progress" id="progress"></div>
-                                        </div>
-                                    </div>
+//         let playerHTMLContent = `<div class="kaplayer-body" id="kaplayer-body">
+//                                     <div class="music-info">
+//                                         <h4 id="title"></h4>
+//                                         <span class="time-inner">
+//                                             <span class="ptime">00:00</span> / <span class="dtime">00:00</span>
+//                                         </span>
+//                                         <div class="progress-container" id="progress-container">
+//                                             <div class="progress" id="progress"></div>
+//                                         </div>
+//                                     </div>
 
-                                    <audio id="audio"></audio>
+//                                     <audio id="audio"></audio>
 
-                                    <div class="img-container">
-                                        <img alt="music-cover" id="cover" />
-                                    </div>
-                                    <div class="navigation">
-                                        <button id="prev" class="action-btn">
-                                            <i class="fas fa-backward"></i>
-                                        </button>
-                                        <button id="play" class="action-btn action-btn-big">
-                                            <i class="fas fa-play"></i>
-                                        </button>
-                                        <button id="next" class="action-btn">
-                                            <i class="fas fa-forward"></i>
-                                        </button>
-                                    </div>
-                                 </div>`
-
-this.container.innerHTML = playerHTMLContent
+//                                     <div class="img-container">
+//                                         <img alt="music-cover" id="cover" />
+//                                     </div>
+//                                     <div class="navigation">
+//                                         <button id="prev" class="action-btn">
+//                                             <i class="fas fa-backward"></i>
+//                                         </button>
+//                                         <button id="play" class="action-btn action-btn-big">
+//                                             <i class="fas fa-play"></i>
+//                                         </button>
+//                                         <button id="next" class="action-btn">
+//                                             <i class="fas fa-forward"></i>
+//                                         </button>
+//                                     </div>
+//                                  </div>`
+        this.template = new Template(this.options)
+// this.container.innerHTML = playerHTMLContent
         // this.list = options.audios;
         // TODO: multiple audios management array
         this.list = new List(this)
@@ -97,9 +98,9 @@ this.container.innerHTML = playerHTMLContent
         // this.audio.addEventListener('timeupdate', DurTime)
         this.audio.addEventListener('timeupdate', () => {
             const currentTime = utils.secondToTime(this.audio.currentTime)
-            let ptime = this.container.querySelector('.ptime')
-            if(ptime.innerHTML !== currentTime) {
-                ptime.innerHTML = currentTime
+            let playBackTime = this.container.querySelector('.playback-time')
+            if (playBackTime.innerHTML !== currentTime) {
+                playBackTime.innerHTML = currentTime
             }
         })
         this.audio.addEventListener('durationchange', () => {

@@ -47,7 +47,7 @@ body {
   transform: translate(-50%, 50%);
 }
 
-.img-container img {
+.music-cover {
   border-radius: 50%;
   object-fit: cover;
   height: 110px;
@@ -60,9 +60,12 @@ body {
   animation-play-state: paused;
 }
 
-.kaplayer-body.play .img-container img {
+.kaplayer-body.playing .music-cover {
   animation-play-state: running;
 }
+/* .kaplayer-body.play .img-container img {
+  animation-play-state: running;
+} */
 
 @keyframes rotate {
   from {
@@ -114,12 +117,12 @@ body {
   z-index: 0;
 }
 
-.kaplayer-body.play .music-info {
+.kaplayer-body.playing .music-info {
   opacity: 1;
   transform: translateY(-100%);
 }
 
-.music-info h4 {
+.music-title {
   margin: 0;
 }
 
