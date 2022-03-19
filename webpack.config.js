@@ -3,7 +3,8 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const autoprefixer = require('autoprefixer')
+// const autoprefixer = require('autoprefixer')
+const TerserPlugin = require("terser-webpack-plugin")
 const isProduction = process.env.NODE_ENV == 'production';
 // const stylesHandler = 'style-loader';
 
@@ -52,30 +53,37 @@ const config = {
             //     type: 'asset',
             // },
             {
-                test: /\.css$/,
-                use: ['style-loader', {
-                    loader: 'postcss-loader',
-                    options: {
+                test: /\.css$/i,
+                use: [MiniCssExtractPlugin.loader, 'css-loader', {
+                    loader: 'postcss-loader', options: {
                         postcssOptions: {
                             plugins: ["autoprefixer"]
                         }
-                        
                     }
-                }]
+                }],
+            },
+            // {
+            //     test: /\.css$/,
+            //     use: ['style-loader', {
+            //         loader: 'postcss-loader',
+            //         options: {
+            //             postcssOptions: {
+            //                 plugins: ["autoprefixer"]
+            //             }
+                        
+            //         }
+            //     }]
                 
-            },
+            // },
                          
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            },
+            
             // Add your rules for custom modules here
             // Learn more about loaders from https://webpack.js.org/loaders/
         ],
     },
     optimization: {
         minimizer: [
-            new CssMinimizerPlugin()
+            new CssMinimizerPlugin(), new TerserPlugin()
         ]
     },
     devtool: "source-map",
