@@ -13,13 +13,13 @@ class KaPlayer {
      * @constructor
      */
     constructor(options) {
-        // TODO: options seems not to deal with multiple audios
+        
         this.options = handleOption(options);
         this.container = this.options.container;
         this.paused = true;
         this.playedPromise = Promise.resolve();
         this.mode = 'normal';
-
+        // TODO: 这些初始化处理放在template
         this.container.classList.add('kaplayer');
         // if (this.options.lrcType) {
         //     this.container.classList.add('lyric')
