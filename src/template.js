@@ -1,15 +1,17 @@
 class Template {
     constructor(options) {
         this.container = options.container
-        this.options = options.options
+        // this.options = options
+        // this.playlist = 
         this.init()
     }
 
     init() {
         let cover = '';
-        // TODO： 我没有这么处理audio列表
-        if(this.options.audio.length) {
-            cover = this.options.audio[0].cover
+        // this.options.playlist
+       
+        if (this.options.playlist.length) {
+            cover = this.options.playlist[0].cover
         }
 
 
@@ -42,7 +44,28 @@ class Template {
                                            </div>
                                        </div>
                                     </figure>`
+                                    
+        // this.player.music = {
+        //     img: this.container.querySelector('#cover'),
+        //     audio: this.container.querySelector('#audio'),
+        //     title: this.container.querySelector('#title'),
 
+        // }                            
+        // this.template.img = this.container.querySelector('#cover')
+        // this.template.audio = 
+        // const prevBtn = this.container.querySelector('#prev')
+        // const nextBtn = this.container.querySelector('#next')
+        // prevBtn.addEventListener('click', (event) => {
+
+        // })
+        // nextBtn.addEventListener('click', (event) => {
+
+        // })
+        // this.playPauseBtn = this.container.querySelector('')
+    }
+
+    getElement(className) {
+        return this.container.querySelector(className)
     }
 }
 

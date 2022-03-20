@@ -5,9 +5,11 @@ export default (options) => {
         lrcType: options.showlrc || options.lrc || 0,
         preload: 'metadata',
         volumn: 0.7,
+        playlist: options.music,
         // audio: options.music || [],
-        storageName: 'kaplayer-setting',
+        // storageName: 'kaplayer-setting',
     }
+    // options don't contain some default configuration options
     for (const defaultKey in defaultOption) {
         if (defaultOption.hasOwnProperty(defaultKey) && !options.hasOwnProperty(defaultKey)) {
             options[defaultKey] = defaultOption[defaultKey];

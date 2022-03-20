@@ -1,33 +1,38 @@
 class Controller {
-    constructor(player, list) {
+    constructor(template, playlist) {
+        
         // console.log(player)
-        this.playpauseBtn = player.container.querySelector('#playpause')
-        this.prevBtn = player.container.querySelector('#prev')
-        this.nextBtn = player.container.querySelector('#next')
-        this.player_body = player.container.querySelector('#kaplayer-body')
-        this.audio = player.container.querySelector('#audio')
-        this.progressContainer = player.container.querySelector('#progress-container')
-        this.list = list
+        // this.playpauseBtn = player.container.querySelector('#playpause')
+        // this.prevBtn = player.container.querySelector('#prev')
+        // this.nextBtn = player.container.querySelector('#next')
+        // this.player_body = player.container.querySelector('#kaplayer-body')
+        // this.audio = player.container.querySelector('#audio')
+        // this.progressContainer = player.container.querySelector('#progress-container')
+        this.playpauseBtn = template.getElement('#playpause')
+        this.player_body = template.getElement('#kaplayer-body')
+        this.playlist = playlist
 
         this.btnEvents()
     }
 
-    
-    playSong() {
-        this.player_body.classList.add('playing')
-        this.playpauseBtn.querySelector('i.fas').classList.remove('fa-play')
-        this.playpauseBtn.querySelector('i.fas').classList.add('fa-pause')
+    switch(index) {
 
-        this.audio.play()
     }
+    // playSong() {
+    //     this.player_body.classList.add('playing')
+    //     this.playpauseBtn.querySelector('i.fas').classList.remove('fa-play')
+    //     this.playpauseBtn.querySelector('i.fas').classList.add('fa-pause')
 
-    pauseSong() {
-        this.player_body.classList.remove('playing')
-        this.playpauseBtn.querySelector('i.fas').classList.add('fa-play')
-        this.playpauseBtn.querySelector('i.fas').classList.remove('fa-pause')
+    //     this.audio.play()
+    // }
 
-        this.audio.pause()
-    }
+    // pauseSong() {
+    //     this.player_body.classList.remove('playing')
+    //     this.playpauseBtn.querySelector('i.fas').classList.add('fa-play')
+    //     this.playpauseBtn.querySelector('i.fas').classList.remove('fa-pause')
+
+    //     this.audio.pause()
+    // }
 
     btnEvents() {
         this.playpauseBtn.addEventListener('click', () => {

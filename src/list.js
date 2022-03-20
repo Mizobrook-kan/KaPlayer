@@ -31,6 +31,10 @@ class List {
             
         }
     }
+
+    get index() {
+        return this.index
+    }
 }
 
 export default List
