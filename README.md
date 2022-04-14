@@ -1,10 +1,6 @@
 # KaPlayer
 
-A music player aims to resolve some legacies of other players. Currently, It just provided basic functionality and css style refers to [repo vanillawebprojects](https://github.com/bradtraversy/vanillawebprojects/tree/master/music-player). I also want to implement extra features, such as frequency bar.
+A repo archives some experimental code on music player in browser. It aimes to explore audio API with some DSP filter effects hoisted on branch master. The player is implemented with a fancy style and being provided a spectrum as well as low-pass filter, high-pass filter and so on.
 
-## Missing Stuff
-List some trackling funtionality issues here. There are many left issues, I can't take care of everything. Add more items at any time.
-- [ ] Chinese garbled test, [APlayer #726](https://github.com/DIYgod/APlayer/issues/726)
-- [ ] port for blog platforms. 
-    - [ ] typecho, [APlayer #724](https://github.com/DIYgod/APlayer/issues/724)
-- [ ] hide song url, [APlayer #713](https://github.com/DIYgod/APlayer/issues/713)
+--------------Updated-----------------
+I don't maintain it anymore, since increasing fftSize would add more frequency bar and it results in a little free space in canvas, so I can't support a fine control over audio effects.
